@@ -1,27 +1,26 @@
 <?php
+$conn = mysqli_connect('localhost', 'root', '', 'newproject');
 
-$conn= mysqli_connect('localhost','root','','newproject'); 
+if (!$conn) {
+    die('Error: ' . mysqli_connect_error());
+}
 
-
-if(!$conn){ 
-    echo 'Erorr' . mysqli_connect_error();
-    ; }
- 
- $FirstName = $_POST['FirstName'];
- 
- $Email = $_POST['Email'];
- 
+if (isset($_POST['submit'])) {
+    $FirstName = mysqli_real_escape_string($conn, $_POST['FirstName']);
+    $Email = mysqli_real_escape_string($conn, $_POST['Email']);
+    $Gender = mysqli_real_escape_string($conn, $_POST['Gender']);
 
 
+    $sql = "INSERT INTO students (FirstName, Email, Gender)
+            VALUES ('$FirstName', '$Email', '$Gender')";
 
- if (isset($_POST['submit'])) {
-
-     $sql = "INSERT INTO students(FirstName , Email)
-            VALUES( '$FirstName' ,  '$Email' )" ;
-    
-     mysqli_query($conn,$sql); 
- }
- ?>
+    if (mysqli_query($conn, $sql)) {
+        echo "Registration successful!";
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,23 +31,26 @@ if(!$conn){
     <title>Student Registration</title>
 </head>
 <body>
-    
-<form action="index.php" method="POST">
-    
-<h1>Student Registration Form </h1>
-<div>
-       <label for="FirstName">FirstName</label>
-       <input type="text"  id="FirstName" name="FirstName">
-    </div>
-    <div>
-        <label for="Email">Email</label>
-        <input type="text"  id="Email" name="Email" >
-     </div>
-     
-    <div>
-        <input type="submit" value="send">
-    </div>
-
-</form>
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
+        <h1>Student Registration Form</h1>
+        <div>
+            <label for="FirstName">FirstName</label>
+            <input type="text" id="FirstName" name="FirstName">
+        </div>
+        <div>
+            <label for="Email">Email</label>
+            <input type="text" id="Email" name="Email">
+        </div>
+        <div>
+            <label for="Gender">Gender</label>
+            <div>
+                <label for="Male"><input type="radio" name="Gender" value="m" id="Male">Male</label>
+                <label for="Female"><input type="radio" name="Gender" value="f" id="Female">Female</label>
+            </div>    
+        </div>
+        <div>
+            <input type="submit" name="submit" value="Send">
+        </div>
+    </form>
 </body>
 </html>
